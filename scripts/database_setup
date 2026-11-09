@@ -1,0 +1,86 @@
+
+/*
+    ============================================================
+                    APEXPLANET DATABASE SETUP
+    ============================================================
+
+    WARNING:
+    This script will permanently DELETE the existing
+    'apexplanet' database, including ALL its tables,
+    records, stored procedures, views, and other objects.
+
+    ALL EXISTING DATA WILL BE LOST!
+
+    Make sure to take a complete database backup before
+    executing this script if you need to preserve your data.
+
+    Execute this script only if you intend to recreate
+    the database from scratch.
+
+    ============================================================
+    Project Name : ApexPlanet
+    Database     : apexplanet
+    Platform     : Microsoft SQL Server
+    ============================================================
+*/
+
+USE master;
+GO
+
+-- =============================================
+-- STEP 1: Check if the database already exists
+-- =============================================
+
+IF DB_ID('apexplanet') IS NOT NULL
+BEGIN
+    PRINT 'Existing database found. Preparing to recreate it...';
+
+    -- Disconnect all active users
+    ALTER DATABASE apexplanet
+    SET SINGLE_USER
+    WITH ROLLBACK IMMEDIATE;
+
+    -- Drop the existing database
+    DROP DATABASE apexplanet;
+
+    PRINT 'Existing database dropped successfully.';
+END;
+GO
+
+-- =============================================
+-- STEP 2: Create a new database
+-- =============================================
+
+CREATE DATABASE apexplanet;
+GO
+
+-- =============================================
+-- STEP 3: Configure the database
+-- =============================================
+
+ALTER DATABASE apexplanet
+SET MULTI_USER;
+GO
+
+-- =============================================
+-- STEP 4: Verify database creation
+-- =============================================
+
+IF DB_ID('apexplanet') IS NOT NULL
+BEGIN
+    PRINT '========================================';
+    PRINT 'ApexPlanet database created successfully!';
+    PRINT '========================================';
+END
+ELSE
+BEGIN
+    PRINT 'Database creation failed!';
+END;
+GO
+
+-- =============================================
+-- STEP 5: Switch to the new database
+-- =============================================
+
+USE apexplanet;
+GO
