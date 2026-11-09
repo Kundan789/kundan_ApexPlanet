@@ -12,11 +12,9 @@
     Platform      : Microsoft SQL Server
 
     SCHEMAS:
-    1. fact   - Stores fact tables containing measurable data.
-    2. dim    - Stores dimension tables containing descriptive data.
-    3. bronze - Stores raw data ingested from source systems.
-    4. silver - Stores cleaned and transformed data.
-    5. gold   - Stores business-ready and aggregated data.
+    1. bronze - Stores raw data ingested from source systems.
+    2. silver - Stores cleaned and transformed data.
+    3. gold   - Stores business-ready and aggregated data.
 
     NOTE:
     This script creates schemas only if they do not
@@ -28,46 +26,9 @@
 USE apexplanet;
 GO
 
--- =============================================
--- STEP 1: CREATE FACT SCHEMA
--- =============================================
-
-IF NOT EXISTS (
-    SELECT 1
-    FROM sys.schemas
-    WHERE name = 'fact'
-)
-BEGIN
-    EXEC('CREATE SCHEMA fact');
-    PRINT 'Fact schema created successfully.';
-END
-ELSE
-BEGIN
-    PRINT 'Fact schema already exists.';
-END;
-GO
 
 -- =============================================
--- STEP 2: CREATE DIMENSION SCHEMA
--- =============================================
-
-IF NOT EXISTS (
-    SELECT 1
-    FROM sys.schemas
-    WHERE name = 'dim'
-)
-BEGIN
-    EXEC('CREATE SCHEMA dim');
-    PRINT 'Dimension schema created successfully.';
-END
-ELSE
-BEGIN
-    PRINT 'Dimension schema already exists.';
-END;
-GO
-
--- =============================================
--- STEP 3: CREATE BRONZE LAYER
+-- STEP 1: CREATE BRONZE LAYER
 -- =============================================
 
 IF NOT EXISTS (
@@ -86,7 +47,7 @@ END;
 GO
 
 -- =============================================
--- STEP 4: CREATE SILVER LAYER
+-- STEP 2: CREATE SILVER LAYER
 -- =============================================
 
 IF NOT EXISTS (
@@ -105,7 +66,7 @@ END;
 GO
 
 -- =============================================
--- STEP 5: CREATE GOLD LAYER
+-- STEP 3: CREATE GOLD LAYER
 -- =============================================
 
 IF NOT EXISTS (
@@ -124,7 +85,7 @@ END;
 GO
 
 -- =============================================
--- STEP 6: VERIFY CREATED SCHEMAS
+-- STEP 4: VERIFY CREATED SCHEMAS
 -- =============================================
 
 SELECT
@@ -132,7 +93,7 @@ SELECT
     schema_id AS SchemaID,
     USER_NAME(principal_id) AS SchemaOwner
 FROM sys.schemas
-WHERE name IN ('fact', 'dim', 'bronze', 'silver', 'gold')
+WHERE name IN ('bronze', 'silver', 'gold')
 ORDER BY name;
 GO
 
