@@ -1,0 +1,110 @@
+
+/*
+    ============================================================
+              APEXPLANET - GOLD LAYER TABLE CREATION
+    ============================================================
+
+    Description:
+    This script creates the Gold layer table in the
+    ApexPlanet database.
+
+    Database : apexplanet
+    Schema   : gold
+    Table    : apexplanet_dataanalytics_dataset
+
+    PURPOSE:
+    The Gold layer stores business-ready, refined, and
+    analytical data derived from the Silver layer.
+
+    It is designed to support:
+    1. Business intelligence and reporting.
+    2. Data visualization and dashboard development.
+    3. Analytical queries and business insights.
+    4. Aggregated and structured business data.
+
+    TABLE STRUCTURE:
+    1. Order Information
+    2. Customer Information
+    3. Product Information
+    4. Sales Information
+    5. Data Warehouse Metadata
+
+    WARNING:
+    If the table already exists, this script will DROP it.
+    ALL EXISTING DATA INSIDE THIS TABLE WILL BE LOST!
+
+    Make sure to back up the data before execution if needed.
+
+    ============================================================
+*/
+
+-- =============================================
+-- STEP 1: SELECT THE DATABASE
+-- =============================================
+
+USE apexplanet;
+GO
+
+-- =============================================
+-- STEP 2: CHECK AND DROP EXISTING TABLE
+-- =============================================
+
+IF OBJECT_ID(
+    'gold.apexplanet_dataanalytics_dataset',
+    'U'
+) IS NOT NULL
+BEGIN
+    DROP TABLE gold.apexplanet_dataanalytics_dataset;
+
+    PRINT 'Existing Gold layer table dropped successfully.';
+END;
+GO
+
+-- =============================================
+-- STEP 3: CREATE GOLD LAYER TABLE
+-- =============================================
+
+CREATE TABLE gold.apexplanet_dataanalytics_dataset
+(
+    -- Order Information
+    order_id        VARCHAR(255),
+    order_date      DATE,
+
+    -- Customer Information
+    customer_id     VARCHAR(255),
+    customer_name   VARCHAR(255),
+    age             INT,
+    gender          VARCHAR(255),
+    city            VARCHAR(255),
+
+    -- Product Information
+    product         VARCHAR(255),
+    category        VARCHAR(255),
+
+    -- Sales Information
+    quantity        INT,
+    unit_price      FLOAT,
+    total_sales     FLOAT,
+
+    -- Data Warehouse Metadata
+    dwh_create_date DATETIME2 DEFAULT GETDATE()
+);
+GO
+
+PRINT 'Gold layer table created successfully!';
+GO
+
+-- =============================================
+-- STEP 4: VERIFY TABLE CREATION
+-- =============================================
+
+SELECT *
+FROM gold.apexplanet_dataanalytics_dataset;
+GO
+
+-- =============================================
+-- STEP 5: VERIFY TABLE STRUCTURE
+-- =============================================
+
+EXEC sp_help 'gold.apexplanet_dataanalytics_dataset';
+GO
