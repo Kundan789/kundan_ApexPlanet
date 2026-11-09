@@ -1,0 +1,151 @@
+
+/*
+    ============================================================
+               APEXPLANET - GOLD LAYER DATA LOADING
+    ============================================================
+
+    Description:
+    This script transforms cleaned Silver layer data into
+    a business-ready Gold layer sales table.
+
+    Database      : apexplanet
+    Source Table  : silver.apexplanet_dataanalytics_dataset
+    Target Table  : gold.sales_table
+
+    PURPOSE:
+    The Gold layer stores refined and business-oriented
+    sales data for analytical reporting and visualization.
+
+    TRANSFORMATION OPERATIONS:
+    1. Extract cleaned data from the Silver layer.
+    2. Categorize customers based on their age groups.
+    3. Create meaningful customer segmentation.
+    4. Load transformed records into the Gold layer.
+    5. Handle NULL and out-of-range age values.
+
+    AGE CATEGORIES:
+    18 - 24 : Gen Z Adults
+    25 - 34 : Millennials
+    35 - 44 : Mid-Career
+    45 - 54 : Mature Professionals
+    55 - 65 : Pre-Retirement
+    Others  : Unknown
+
+    WARNING:
+    TRUNCATE TABLE permanently removes all existing records
+    from the Gold sales table before loading fresh data.
+
+    ============================================================
+*/
+
+-- =============================================
+-- STEP 1: SELECT THE DATABASE
+-- =============================================
+
+USE apexplanet;
+GO
+
+-- =============================================
+-- STEP 2: CHECK AND TRUNCATE EXISTING DATA
+-- =============================================
+
+IF OBJECT_ID('gold.sales_table', 'U') IS NOT NULL
+BEGIN
+    TRUNCATE TABLE gold.sales_table;
+
+    PRINT 'Existing Gold layer data truncated successfully.';
+END
+ELSE
+BEGIN
+    PRINT 'ERROR: Gold sales table does not exist!';
+    RETURN;
+END;
+GO
+
+-- =============================================
+-- STEP 3: INSERT TRANSFORMED DATA INTO GOLD
+-- =============================================
+
+INSERT INTO gold.sales_table
+(
+    order_id,
+    order_date,
+    customer_id,
+    customer_name,
+    age,
+    age_category,
+    gender,
+    city,
+    product,
+    category,
+    quantity,
+    unit_price,
+    total_sales
+)
+
+SELECT
+    -- Order Information
+    order_id,
+    order_date,
+
+    -- Customer Information
+    customer_id,
+    customer_name,
+    age,
+
+    -- Customer Age Segmentation
+    CASE
+        WHEN age BETWEEN 18 AND 24 THEN 'Gen Z Adults'
+        WHEN age BETWEEN 25 AND 34 THEN 'Millennials'
+        WHEN age BETWEEN 35 AND 44 THEN 'Mid-Career'
+        WHEN age BETWEEN 45 AND 54 THEN 'Mature Professionals'
+        WHEN age BETWEEN 55 AND 65 THEN 'Pre-Retirement'
+        ELSE 'Unknown'
+    END AS age_category,
+
+    gender,
+    city,
+
+    -- Product Information
+    product,
+    category,
+
+    -- Sales Information
+    quantity,
+    unit_price,
+    total_sales
+
+FROM silver.apexplanet_dataanalytics_dataset;
+GO
+
+PRINT 'Gold layer sales data loaded successfully!';
+GO
+
+-- =============================================
+-- STEP 4: VERIFY LOADED DATA
+-- =============================================
+
+SELECT *
+FROM gold.sales_table;
+GO
+
+-- =============================================
+-- STEP 5: CHECK TOTAL RECORD COUNT
+-- =============================================
+
+SELECT
+    COUNT(*) AS TotalRecordsLoaded
+FROM gold.sales_table;
+GO
+
+-- =============================================
+-- STEP 6: VERIFY CUSTOMER AGE SEGMENTATION
+-- =============================================
+
+SELECT
+    age_category,
+    COUNT(*) AS TotalCustomers
+FROM gold.sales_table
+GROUP BY age_category
+ORDER BY age_category;
+GO
