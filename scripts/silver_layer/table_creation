@@ -1,0 +1,88 @@
+
+/*
+    ============================================================
+              APEXPLANET - SILVER LAYER TABLE CREATION
+    ============================================================
+
+    Description:
+    This script creates the raw data table in the silver layer
+    of the ApexPlanet database.
+
+    Database : apexplanet
+    Schema   : silver
+    Table    : apexplanet_dataanalytics_dataset
+
+    PURPOSE:
+    The silver layer stores raw data received from the
+    source system without applying major transformations.
+
+    WARNING:
+    If the table already exists, this script will DROP it.
+    ALL EXISTING DATA INSIDE THIS TABLE WILL BE LOST!
+
+    Make sure to back up the data before execution if needed.
+
+    ============================================================
+*/
+
+-- =============================================
+-- STEP 1: SELECT THE DATABASE
+-- =============================================
+
+USE apexplanet;
+GO
+
+-- =============================================
+-- STEP 2: CHECK AND DROP EXISTING TABLE
+-- =============================================
+
+IF OBJECT_ID(
+    'silver.apexplanet_dataanalytics_dataset',
+    'U'
+) IS NOT NULL
+BEGIN
+    DROP TABLE silver.apexplanet_dataanalytics_dataset;
+
+    PRINT 'Existing silver table dropped successfully.';
+END;
+GO
+
+-- =============================================
+-- STEP 3: CREATE silver LAYER TABLE
+-- =============================================
+
+CREATE TABLE silver.apexplanet_dataanalytics_dataset
+(
+    -- Order Information
+    order_id        VARCHAR(255),
+    order_date      DATE,
+
+    -- Customer Information
+    customer_id     VARCHAR(255),
+    customer_name   VARCHAR(255),
+    age             INT,
+    gender          VARCHAR(255),
+    city            VARCHAR(255),
+
+    -- Product Information
+    product         VARCHAR(255),
+    category        VARCHAR(255),
+
+    -- Sales Information
+    quantity        INT,
+    unit_price      FLOAT,
+    total_sales     FLOAT,
+    dwh_create_date DATETIME2 DEFAULT GETDATE()
+);
+GO
+
+PRINT 'silver table created successfully!';
+GO
+
+-- =============================================
+-- STEP 4: VERIFY TABLE CREATION
+-- =============================================
+
+SELECT *
+FROM silver.apexplanet_dataanalytics_dataset;
+GO
