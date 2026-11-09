@@ -1,0 +1,87 @@
+
+/*
+    ============================================================
+              APEXPLANET - BRONZE LAYER TABLE CREATION
+    ============================================================
+
+    Description:
+    This script creates the raw data table in the Bronze layer
+    of the ApexPlanet database.
+
+    Database : apexplanet
+    Schema   : bronze
+    Table    : apexplanet_dataanalytics_dataset
+
+    PURPOSE:
+    The Bronze layer stores raw data received from the
+    source system without applying major transformations.
+
+    WARNING:
+    If the table already exists, this script will DROP it.
+    ALL EXISTING DATA INSIDE THIS TABLE WILL BE LOST!
+
+    Make sure to back up the data before execution if needed.
+
+    ============================================================
+*/
+
+-- =============================================
+-- STEP 1: SELECT THE DATABASE
+-- =============================================
+
+USE apexplanet;
+GO
+
+-- =============================================
+-- STEP 2: CHECK AND DROP EXISTING TABLE
+-- =============================================
+
+IF OBJECT_ID(
+    'bronze.apexplanet_dataanalytics_dataset',
+    'U'
+) IS NOT NULL
+BEGIN
+    DROP TABLE bronze.apexplanet_dataanalytics_dataset;
+
+    PRINT 'Existing Bronze table dropped successfully.';
+END;
+GO
+
+-- =============================================
+-- STEP 3: CREATE BRONZE LAYER TABLE
+-- =============================================
+
+CREATE TABLE bronze.apexplanet_dataanalytics_dataset
+(
+    -- Order Information
+    order_id        VARCHAR(255),
+    order_date      DATE,
+
+    -- Customer Information
+    customer_id     VARCHAR(255),
+    customer_name   VARCHAR(255),
+    age             INT,
+    gender          VARCHAR(255),
+    city            VARCHAR(255),
+
+    -- Product Information
+    product         VARCHAR(255),
+    category        VARCHAR(255),
+
+    -- Sales Information
+    quantity        INT,
+    unit_price      FLOAT,
+    total_sales     FLOAT
+);
+GO
+
+PRINT 'Bronze table created successfully!';
+GO
+
+-- =============================================
+-- STEP 4: VERIFY TABLE CREATION
+-- =============================================
+
+SELECT *
+FROM bronze.apexplanet_dataanalytics_dataset;
+GO
