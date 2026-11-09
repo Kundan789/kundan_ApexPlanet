@@ -5,16 +5,33 @@
     ============================================================
 
     Description:
-    This script creates the raw data table in the silver layer
-    of the ApexPlanet database.
+    This script creates the Silver layer table in the
+    ApexPlanet database.
 
     Database : apexplanet
     Schema   : silver
     Table    : apexplanet_dataanalytics_dataset
 
     PURPOSE:
-    The silver layer stores raw data received from the
-    source system without applying major transformations.
+    The Silver layer stores cleaned, standardized, and
+    validated data received from the Bronze layer.
+
+    It acts as an intermediate layer between raw data
+    ingestion and business-level analytical processing.
+
+    DATA TRANSFORMATION OBJECTIVES:
+    1. Remove duplicate records.
+    2. Handle NULL and missing values.
+    3. Remove unwanted leading and trailing spaces.
+    4. Standardize data formats and values.
+    5. Maintain data consistency and quality.
+
+    TABLE STRUCTURE:
+    1. Order Information
+    2. Customer Information
+    3. Product Information
+    4. Sales Information
+    5. Data Warehouse Metadata
 
     WARNING:
     If the table already exists, this script will DROP it.
@@ -43,12 +60,12 @@ IF OBJECT_ID(
 BEGIN
     DROP TABLE silver.apexplanet_dataanalytics_dataset;
 
-    PRINT 'Existing silver table dropped successfully.';
+    PRINT 'Existing Silver layer table dropped successfully.';
 END;
 GO
 
 -- =============================================
--- STEP 3: CREATE silver LAYER TABLE
+-- STEP 3: CREATE SILVER LAYER TABLE
 -- =============================================
 
 CREATE TABLE silver.apexplanet_dataanalytics_dataset
@@ -72,11 +89,13 @@ CREATE TABLE silver.apexplanet_dataanalytics_dataset
     quantity        INT,
     unit_price      FLOAT,
     total_sales     FLOAT,
+
+    -- Data Warehouse Metadata
     dwh_create_date DATETIME2 DEFAULT GETDATE()
 );
 GO
 
-PRINT 'silver table created successfully!';
+PRINT 'Silver layer table created successfully!';
 GO
 
 -- =============================================
@@ -85,4 +104,11 @@ GO
 
 SELECT *
 FROM silver.apexplanet_dataanalytics_dataset;
+GO
+
+-- =============================================
+-- STEP 5: VERIFY TABLE STRUCTURE
+-- =============================================
+
+EXEC sp_help 'silver.apexplanet_dataanalytics_dataset';
 GO
