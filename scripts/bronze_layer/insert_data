@@ -1,0 +1,94 @@
+
+/*
+    ============================================================
+                 APEXPLANET - BRONZE DATA LOADING
+    ============================================================
+
+    Description:
+    This script loads raw data from a CSV file into the
+    Bronze layer using SQL Server BULK INSERT.
+
+    Database : apexplanet
+    Schema   : bronze
+    Table    : apexplanet_dataAnalytics_dataset
+
+    Source File:
+    C:\Downloads\ApexPlanet_DataAnalytics_Dataset2.csv
+
+    LOADING PROCESS:
+    1. Select the ApexPlanet database.
+    2. Check whether the destination table exists.
+    3. Truncate existing records from the table.
+    4. Import records from the CSV file.
+    5. Verify the loaded data.
+
+    WARNING:
+    TRUNCATE TABLE permanently removes ALL existing records
+    from the destination table before loading new data.
+
+    Make sure the CSV file contains the complete dataset
+    before executing this script.
+
+    ============================================================
+*/
+
+-- =============================================
+-- STEP 1: SELECT THE DATABASE
+-- =============================================
+
+USE apexplanet;
+GO
+
+-- =============================================
+-- STEP 2: CHECK AND TRUNCATE EXISTING DATA
+-- =============================================
+
+IF OBJECT_ID(
+    'bronze.apexplanet_dataAnalytics_dataset',
+    'U'
+) IS NOT NULL
+BEGIN
+    TRUNCATE TABLE bronze.apexplanet_dataAnalytics_dataset;
+
+    PRINT 'Existing records truncated successfully.';
+END
+ELSE
+BEGIN
+    PRINT 'ERROR: Destination table does not exist!';
+    RETURN;
+END;
+GO
+
+-- =============================================
+-- STEP 3: LOAD DATA FROM CSV FILE
+-- =============================================
+
+BULK INSERT bronze.apexplanet_dataAnalytics_dataset
+FROM 'C:\Downloads\ApexPlanet_DataAnalytics_Dataset2.csv'
+WITH
+(
+    FIELDTERMINATOR = ',',
+    ROWTERMINATOR = '0x0a',
+    FIRSTROW = 2
+);
+GO
+
+PRINT 'CSV data loaded successfully into Bronze layer!';
+GO
+
+-- =============================================
+-- STEP 4: VERIFY LOADED DATA
+-- =============================================
+
+SELECT *
+FROM bronze.apexplanet_dataAnalytics_dataset;
+GO
+
+-- =============================================
+-- STEP 5: CHECK TOTAL RECORD COUNT
+-- =============================================
+
+SELECT
+    COUNT(*) AS TotalRecordsLoaded
+FROM bronze.apexplanet_dataAnalytics_dataset;
+GO
