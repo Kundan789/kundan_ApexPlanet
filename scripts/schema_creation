@@ -1,0 +1,140 @@
+
+/*
+    ============================================================
+                  APEXPLANET - SCHEMA CREATION
+    ============================================================
+
+    Description:
+    This script creates the required database schemas
+    for organizing the ApexPlanet database.
+
+    Database      : apexplanet
+    Platform      : Microsoft SQL Server
+
+    SCHEMAS:
+    1. fact   - Stores fact tables containing measurable data.
+    2. dim    - Stores dimension tables containing descriptive data.
+    3. bronze - Stores raw data ingested from source systems.
+    4. silver - Stores cleaned and transformed data.
+    5. gold   - Stores business-ready and aggregated data.
+
+    NOTE:
+    This script creates schemas only if they do not
+    already exist. Existing schemas will not be modified.
+
+    ============================================================
+*/
+
+USE apexplanet;
+GO
+
+-- =============================================
+-- STEP 1: CREATE FACT SCHEMA
+-- =============================================
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.schemas
+    WHERE name = 'fact'
+)
+BEGIN
+    EXEC('CREATE SCHEMA fact');
+    PRINT 'Fact schema created successfully.';
+END
+ELSE
+BEGIN
+    PRINT 'Fact schema already exists.';
+END;
+GO
+
+-- =============================================
+-- STEP 2: CREATE DIMENSION SCHEMA
+-- =============================================
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.schemas
+    WHERE name = 'dim'
+)
+BEGIN
+    EXEC('CREATE SCHEMA dim');
+    PRINT 'Dimension schema created successfully.';
+END
+ELSE
+BEGIN
+    PRINT 'Dimension schema already exists.';
+END;
+GO
+
+-- =============================================
+-- STEP 3: CREATE BRONZE LAYER
+-- =============================================
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.schemas
+    WHERE name = 'bronze'
+)
+BEGIN
+    EXEC('CREATE SCHEMA bronze');
+    PRINT 'Bronze layer created successfully.';
+END
+ELSE
+BEGIN
+    PRINT 'Bronze layer already exists.';
+END;
+GO
+
+-- =============================================
+-- STEP 4: CREATE SILVER LAYER
+-- =============================================
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.schemas
+    WHERE name = 'silver'
+)
+BEGIN
+    EXEC('CREATE SCHEMA silver');
+    PRINT 'Silver layer created successfully.';
+END
+ELSE
+BEGIN
+    PRINT 'Silver layer already exists.';
+END;
+GO
+
+-- =============================================
+-- STEP 5: CREATE GOLD LAYER
+-- =============================================
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.schemas
+    WHERE name = 'gold'
+)
+BEGIN
+    EXEC('CREATE SCHEMA gold');
+    PRINT 'Gold layer created successfully.';
+END
+ELSE
+BEGIN
+    PRINT 'Gold layer already exists.';
+END;
+GO
+
+-- =============================================
+-- STEP 6: VERIFY CREATED SCHEMAS
+-- =============================================
+
+SELECT
+    name AS SchemaName,
+    schema_id AS SchemaID,
+    USER_NAME(principal_id) AS SchemaOwner
+FROM sys.schemas
+WHERE name IN ('fact', 'dim', 'bronze', 'silver', 'gold')
+ORDER BY name;
+GO
+
+PRINT 'All schema creation operations completed.';
+GO
